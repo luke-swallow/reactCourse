@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Filter from './components/search'
 import AddPeople from './components/addNewPeople'
+import ShowPeople from './components/showPeople'
+import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons ] = useState([
@@ -9,6 +11,11 @@ const App = () => {
   const [newName, setNewName ] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const hook = () =>{
+    axios.get('http://localhost:3001/persons')
+    .then(response=>setPersons(response.data))
+  }
+  useEffect(hook, [])
   const handleName = (event)=>{
       setNewName(event.target.value)
   }
@@ -31,9 +38,7 @@ const App = () => {
         }
        
   }
-  const peopleToRender = filterName === ''? persons: persons.filter((personObject) => personObject.name === filterName)
-  const people= peopleToRender.map((personObj)=> <li key = {personObj.name}>{personObj.name} {personObj.number}</li>)
-  
+  const people = filterName === ''? persons: persons.filter((personObject) => personObject.name === filterName)
   return (
     <div>
       <h2>phonebook</h2>
@@ -41,9 +46,7 @@ const App = () => {
       <h2>Add New</h2>
       <AddPeople newName= {newName} newNumber = {newNumber} handleNumber= {handleNumber} handleName= {handleName} addName= {addName}/>
       <h2>Numbers</h2>
-      <ul>
-          {people}
-      </ul>
+      <ShowPeople peopleToRender = {people} />
     </div>
   )
 }
